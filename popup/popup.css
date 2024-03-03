@@ -42,3 +42,11 @@ button:hover {
     border-radius: 5px; /* Rounded corners for the progress section */
     text-align: center;
 }
+
+#summary {
+    white-space: pre-wrap
+}
+
+#transcription {
+    white-space: pre-wrap
+}
