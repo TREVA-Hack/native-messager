@@ -80,19 +80,17 @@ function listenForClicks() {
 
         console.log("Downloading from " + downloadUrl);
     
-        /*
-         * downloadFile(downloadUrl)
-         *     .then(filepath => {
-         *         console.log("Downloaded to " + filepath);
-         *         document.getElementById("progress").textContent = `Downloaded to ${filepath}`;
-         *         interactWithNativeApp(filepath);
-         *     })
-         *     .catch(error => {
-         *         console.error(`Download failed: ${error.message}`);
-         *         document.getElementById("progress").textContent = `Download failed: ${error.message}`;
-         *     });
-         */
-        interactWithNativeApp("/home/vasilysterekhov/Downloads/escape-to-freedom-720p.webm");
+        
+        downloadFile(downloadUrl)
+            .then(filepath => {
+                console.log("Downloaded to " + filepath);
+                document.getElementById("progress").textContent = `Downloaded to ${filepath}`;
+                interactWithNativeApp(filepath);
+            })
+            .catch(error => {
+                console.error(`Download failed: ${error.message}`);
+                document.getElementById("progress").textContent = `Download failed: ${error.message}`;
+            });
     });
 }
 
