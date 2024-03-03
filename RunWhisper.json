@@ -1,7 +1,7 @@
 {
   "name": "RunWhisper",
   "description": "Transcribes audio files (primarily lecture recordings) using Whisper",
-  "path": "functionality.py",
+  "path": "/usr/bin/functionality.py",
   "type": "stdio",
   "allowed_extensions": ["nativemessenger@example.com"]
 }
