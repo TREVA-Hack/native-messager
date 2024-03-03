@@ -1,16 +1,25 @@
+#!/usr/bin/python3
+
+import nativemessaging
+
+nativemessaging.send_message("Script started")
+
+import sys
+
+print("Script started", file=sys.stderr)
+
+sys.stderr.write("Script started\n")
+
 import whisper
 
-import json
+sys.stderr.write("Whisper imported\n")
 
 # import struct
 # from concurrent.futures import ThreadPoolExecutor
-import nativemessaging
+import json
 import pydub
-import sys
 
-
-model = whisper.load_model("tiny")
-
+sys.stderr.write("Rest imported\n")
 
 # def send_message(message):
 #     """Send a JSON message to the browser extension."""
@@ -37,7 +46,7 @@ model = whisper.load_model("tiny")
 #     return result["text"]
 
 
-def transcribe_in_chunks(audio_path, chunk_size_seconds=30):
+def transcribe_in_chunks(model, audio_path, chunk_size_seconds=30):
     """Transcribe an audio file in chunks and yield partial transcriptions.
 
     Args:
@@ -75,6 +84,14 @@ def transcribe_in_chunks(audio_path, chunk_size_seconds=30):
 
 
 def main():
+    nativemessaging.send_message("MAIN STARTED")
+
+    sys.stderr.write("Main started\n")
+
+    model = whisper.load_model("tiny")
+
+    sys.stderr.write("Whisper model initialised\n")
+
     while True:
         message = nativemessaging.get_message()  # Receive message from the extension
         print("Debug statement 0", file=sys.stderr)
