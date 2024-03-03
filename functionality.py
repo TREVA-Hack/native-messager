@@ -1,25 +1,16 @@
-#!/usr/bin/python3
-
-import nativemessaging
-
-nativemessaging.send_message("Script started")
-
-import sys
-
-print("Script started", file=sys.stderr)
-
-sys.stderr.write("Script started\n")
-
 import whisper
 
-sys.stderr.write("Whisper imported\n")
+import json
 
 # import struct
 # from concurrent.futures import ThreadPoolExecutor
-import json
+import nativemessaging
 import pydub
+import sys
 
-sys.stderr.write("Rest imported\n")
+
+model = whisper.load_model("tiny")
+
 
 # def send_message(message):
 #     """Send a JSON message to the browser extension."""
@@ -46,30 +37,25 @@ sys.stderr.write("Rest imported\n")
 #     return result["text"]
 
 
-def transcribe_in_chunks(model, audio_path, chunk_size_seconds=30):
-    """Transcribe an audio file in chunks and yield partial transcriptions.
+# def transcribe_in_chunks(audio_path, chunk_size_seconds=30):
+#     """Transcribe an audio file in chunks and yield partial transcriptions.
 
-    Args:
-        audio_path (str): Path to the audio file.
-        chunk_size_seconds (int): Desired length of each chunk in seconds. Defaults to 30.
-    """
+#     Args:
+#         audio_path (str): Path to the audio file.
+#         chunk_size_seconds (int): Desired length of each chunk in seconds. Defaults to 30.
+#     """
 
-    audio = pydub.AudioSegment.from_file(audio_path)
+#     audio = pydub.AudioSegment.from_file(audio_path)
 
-    # Calculate chunk duration in milliseconds
-    chunk_size_ms = chunk_size_seconds * 1000
+#     # Calculate chunk duration in milliseconds
+#     chunk_size_ms = chunk_size_seconds * 1000
 
-    # Split into chunks
-    for start in range(0, len(audio), chunk_size_ms):
-        end = min(start + chunk_size_ms, len(audio))
-        chunk = audio[start:end]
-
-        # Save the chunk temporarily (Arjav says to note that this creates temp files)
-        temp_chunk_path = f"chunk_{start}.wav"
-        chunk.export(temp_chunk_path, format="wav")
-
-        result = model.transcribe(temp_chunk_path)
-        yield result["text"]
+#     # Split into chunks
+#     for start in range(0, len(audio), chunk_size_ms):
+#         end = min(start + chunk_size_ms, len(audio))
+#         chunk = audio[start:end]
+#         result = model.transcribe(chunk)
+#         yield result["text"]
 
 
 # def async_transcribe_and_send(audio_path):
@@ -84,33 +70,25 @@ def transcribe_in_chunks(model, audio_path, chunk_size_seconds=30):
 
 
 def main():
-    nativemessaging.send_message("MAIN STARTED")
-
-    sys.stderr.write("Main started\n")
-
-    model = whisper.load_model("tiny")
-
-    sys.stderr.write("Whisper model initialised\n")
-
     while True:
         message = nativemessaging.get_message()  # Receive message from the extension
-        print("Debug statement 0", file=sys.stderr)
-        if "audio_path" in message:
-            print("audio path key found in message", file=sys.stderr)
-            transcription_fragments = list(transcribe_in_chunks(message))
-            print("transcribed chunks converted to list", file=sys.stderr)
-            for fragment in transcription_fragments:
-                response = {"transcription_fragment": fragment, "done": False}
-                nativemessaging.send_message(json.dumps(response))
 
-            nativemessaging.send_message(
-                json.dumps({"transcription_fragment": "", "done": True})
-            )
+        if "audio_path" in message:
+            audio_path = message["audio_path"]  # Extract the audio path
+
+            try:
+                result = model.transcribe(audio_path)
+                transcription = result["text"]
+                response = {"transcription_fragment": transcription, "done": True}
+            except Exception as e:  # Add error handling
+                response = {"error": f"Transcription failed: {str(e)}", "done": True}
+
+            nativemessaging.send_message(json.dumps(response))
             break
+
         else:
-            nativemessaging.send_message(
-                json.dumps({"error": "No audio_path provided", "done": True})
-            )
+            error_response = {"error": "No audio_path provided", "done": True}
+            nativemessaging.send_message(json.dumps(error_response))
 
 
 if __name__ == "__main__":
