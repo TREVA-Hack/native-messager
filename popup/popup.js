@@ -76,6 +76,7 @@ function interactWithNativeApp(path_to_send) {
                 port.disconnect();
                 port.onMessage.removeListener(responseReceived);
                 let srt = response2.transcription;
+                console.log(srt);
             }
         } catch {
             console.log("which is not a JSON");
