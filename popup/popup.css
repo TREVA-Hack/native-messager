@@ -42,8 +42,3 @@ button:hover {
     border-radius: 5px; /* Rounded corners for the progress section */
     text-align: center;
 }
-
-
-#not-on-echo360{
-    color: red;
-}

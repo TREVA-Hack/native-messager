@@ -77,6 +77,20 @@ function interactWithNativeApp(path_to_send) {
                 port.onMessage.removeListener(responseReceived);
                 let srt = response2.transcription;
                 console.log(srt);
+
+                let srtblob = new Blob([srt], { type: 'text/plain' });
+
+                const formData = new FormData();
+
+                formData.append("file", srtblob, "transcript.srt");
+
+                fetch("http://localhost:8000/upload", {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(analysis => console.log(analysis.message))
+                .catch(error => console.error('Epic fail: ', error));
             }
         } catch {
             console.log("which is not a JSON");

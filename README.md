@@ -1,4 +1,12 @@
-Currently, I have no idea how to get this working on Windows.
+# Backend
+
+Run `pip install -r requirements.txt`, create `backend/uploads` if it doesn't already exist, and then `python3 TREVA/backend/main.py`.
+
+Upload the `.srt` file with a POST request to `http://localhost:8000/upload`, the returned JSON will contain the result under the field `message`.
+
+# Browser extension
+
+Currently, I have no idea how to get this working on Windows or Mac.
 
 For Linux, specifically Ubuntu 22.04-based distributions, to run on Firefox:
 
