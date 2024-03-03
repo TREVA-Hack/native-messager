@@ -9,7 +9,7 @@
         "128": "icons/tux.png"
     },
 
-    "permissions": ["nativeMessaging", "unlimitedStorage", "downloads"],
+    "permissions": ["*://echo360.org.uk/*", "nativeMessaging", "unlimitedStorage", "downloads", "activeTab"],
 
     "browser_action": {
         "default_icon": "icons/tux.png",

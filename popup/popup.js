@@ -1,4 +1,21 @@
-var downloadUrl = "https://static.gnu.org/nosvn/videos/escape-to-freedom/videos/escape-to-freedom-720p.webm";
+async function getEcho360DownloadLink(url) {
+    // We assume we already have all the cookies necessary to access the page
+    let url2 = new URL(url.slice(0, url.lastIndexOf('/')) + "/media");
+
+    const response = await fetch(url2);
+
+    if (!response.ok) {
+        throw new Error("Response was not ok: " + response.status + " " + response.statusText); 
+    }
+
+    const data = await response.json();
+
+    let files = data.data[0].video.media.media.current.audioFiles
+
+    largest_audio_file = files.sort((a, b) => b.size - a.size)[0]
+
+    return largest_audio_file.s3Url;
+}
 
 function downloadFile(url) {
     var downloading = browser.downloads.download({
@@ -75,7 +92,7 @@ function interactWithNativeApp(path_to_send) {
     send_path(port, path_to_send);
 }
 
-function listenForClicks() {
+function listenForClicks(current_tab_url) {
     document.addEventListener("click", (e) => {
         console.debug("something pressed");
 
@@ -86,19 +103,17 @@ function listenForClicks() {
 
         console.debug("button pressed");
 
-        console.log("Downloading from " + downloadUrl);
-    
-        
-        downloadFile(downloadUrl)
-            .then(filepath => {
-                console.log("Downloaded to " + filepath);
-                document.getElementById("progress").textContent = `Downloaded to ${filepath}`;
-                interactWithNativeApp(filepath);
-            })
-            .catch(error => {
-                console.error(`Download failed: ${error.message}`);
-                document.getElementById("progress").textContent = `Download failed: ${error.message}`;
+        let video_link = getEcho360DownloadLink(current_tab_url);
+
+        video_link.then((link) => {
+            console.log("Downloading: " + link);
+
+            downloadFile(link).then((path) => {
+                console.log("Downloaded: " + path);
+                document.getElementById("progress").textContent = `Downloaded: ${path}`;
+                interactWithNativeApp(path);
             });
+        });
     });
 }
 
@@ -107,4 +122,17 @@ function reportExecuteScriptError(error) {
     console.error(`Download failed: ${error.message}`);
 }
 
-listenForClicks().catch(reportExecuteScriptError);
+browser.tabs.query({active: true, currentWindow: true}).then((tabs) => {
+    let current_tab_url = tabs[0].url;
+    console.debug("We are at " + current_tab_url);
+    let url = new URL(current_tab_url);
+    if (url.hostname !== "echo360.org.uk") {
+        document.querySelector("#popup-content").classList.add("hidden");
+        document.querySelector('#not-on-echo360').classList.remove("hidden");
+    } else if (url.pathname.indexOf("/lesson") !== 0) {
+        document.querySelector("#popup-content").classList.add("hidden");
+        document.querySelector('#lecture-not-open').classList.remove("hidden");
+    } else {
+        listenForClicks(current_tab_url).catch(reportExecuteScriptError);
+    }
+})
