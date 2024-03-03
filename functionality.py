@@ -75,8 +75,11 @@ def transcribe_in_chunks(audio_path, chunk_size_seconds=30):
 def main():
     while True:
         message = nativemessaging.get_message()  # Receive message from the extension
+        nativemessaging.send_message("Debug statement 0")
         if "audio_path" in message:
+            nativemessaging.send_message("audio path key found in message")
             transcription_fragments = list(transcribe_in_chunks(message))
+            nativemessaging.send_message("transcribed chunks converted to list")
             for fragment in transcription_fragments:
                 response = {"transcription_fragment": fragment, "done": False}
                 nativemessaging.send_message(response)
