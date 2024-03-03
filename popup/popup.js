@@ -76,6 +76,9 @@ function interactWithNativeApp(path_to_send) {
                 port.disconnect();
                 port.onMessage.removeListener(responseReceived);
                 let srt = response2.transcription;
+
+                document.getElementById("transcription").textContent = srt;
+
                 console.log(srt);
 
                 let srtblob = new Blob([srt], { type: 'text/plain' });
@@ -89,7 +92,10 @@ function interactWithNativeApp(path_to_send) {
                     body: formData
                 })
                 .then(response => response.json())
-                .then(analysis => console.log(analysis.message))
+                .then(analysis => {
+                    console.log(analysis.message)
+                    document.getElementById("summary").textContent = analysis.message;
+                })
                 .catch(error => console.error('Epic fail: ', error));
             }
         } catch {
