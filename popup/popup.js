@@ -26,7 +26,7 @@ function downloadFile(url) {
 
 function send_path(port, path_to_send) {
     let message = {
-        "filepath": path_to_send
+        "audio_path": path_to_send
     };
 
     port.postMessage(message);
@@ -34,6 +34,17 @@ function send_path(port, path_to_send) {
 
 function interactWithNativeApp(path_to_send) {
     var port = browser.runtime.connectNative("RunWhisper");
+
+    function disconnected(p) {
+        if (p.error) {
+            console.log("Disconnected from Whisper due to an error: " + p.error.message);
+        } else {
+            console.log("Disconnected from Whisper");
+        }
+        p.onDisconnect.removeListener(disconnected);
+    }
+
+    port.onDisconnect.addListener(disconnected);
 
     console.log("Connected to Whisper")
 
@@ -69,16 +80,19 @@ function listenForClicks() {
 
         console.log("Downloading from " + downloadUrl);
     
-        downloadFile(downloadUrl)
-            .then(filepath => {
-                console.log("Downloaded to " + filepath);
-                document.getElementById("progress").textContent = `Downloaded to ${filepath}`;
-                interactWithNativeApp(filepath);
-            })
-            .catch(error => {
-                console.error(`Download failed: ${error.message}`);
-                document.getElementById("progress").textContent = `Download failed: ${error.message}`;
-            });
+        /*
+         * downloadFile(downloadUrl)
+         *     .then(filepath => {
+         *         console.log("Downloaded to " + filepath);
+         *         document.getElementById("progress").textContent = `Downloaded to ${filepath}`;
+         *         interactWithNativeApp(filepath);
+         *     })
+         *     .catch(error => {
+         *         console.error(`Download failed: ${error.message}`);
+         *         document.getElementById("progress").textContent = `Download failed: ${error.message}`;
+         *     });
+         */
+        interactWithNativeApp("/home/vasilysterekhov/Downloads/escape-to-freedom-720p.webm");
     });
 }
 
