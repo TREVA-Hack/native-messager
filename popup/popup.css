@@ -1,6 +1,17 @@
-html,
-body {
-    width: 150;
+html, body {
+    width: 300px; /* Adjusted width for better visibility */
+    font-family: Arial, sans-serif; /* Added a default font */
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4; /* Light background color */
+}
+
+#container {
+    padding: 10px;
+}
+
+.content {
+    margin-bottom: 10px;
 }
 
 .hidden {
@@ -8,16 +19,31 @@ body {
 }
 
 button {
-    border: none;
-    width: 100%;
-    margin: 3% auto;
-    padding: 4px;
+    border: 1px solid #d4d4d4; /* Added a subtle border */
+    border-radius: 5px; /* Rounded corners */
+    width: calc(100% - 20px); /* Full width with padding */
+    margin: 0 auto;
+    padding: 10px;
     text-align: center;
-    font-size: 1.5em;
+    font-size: 1em;
     cursor: pointer;
-    background-color: #e5f2f2
+    background-color: #e5f2f2;
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
 }
 
 button:hover {
-    background-color: #cff2f2
+    background-color: #cff2f2;
+}
+
+#progress {
+    background-color: #fff;
+    padding: 10px;
+    border: 1px solid #d4d4d4; /* Subtle border for the progress section */
+    border-radius: 5px; /* Rounded corners for the progress section */
+    text-align: center;
+}
+
+
+#not-on-echo360{
+    color: red;
 }

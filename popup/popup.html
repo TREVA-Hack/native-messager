@@ -1,22 +1,26 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <link rel="stylesheet" href="popup.css">
-    </head>
-    <body>
-        <div id="popup-content">
-            <button>Download</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extension Popup</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div id="container">
+        <div id="popup-content" class="content">
+            <button id="downloadBtn">Download</button>
             <div id="progress">
                 <p>Progress placeholder</p>
             </div>
         </div>
-        <div id="not-on-echo360" class="hidden"> 
-            <p>Not on Echo360</p>
+        <div id="not-on-echo360" class="hidden content">
+            <p>Attention: You are not on Echo360!</p>
         </div>
-        <div id="lecture-not-open" class="hidden">
-            <p>Lecture not open</p>
+        <div id="lecture-not-open" class="hidden content">
+            <p>Note: No lecture open</p>
         </div>
-        <script src="popup.js"></script>
-    </body>
+    </div>
+    <script src="popup.js"></script>
+</body>
 </html>
