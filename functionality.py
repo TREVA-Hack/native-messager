@@ -1,6 +1,7 @@
 import whisper
 
-# import json
+import json
+
 # import struct
 # from concurrent.futures import ThreadPoolExecutor
 import nativemessaging
@@ -83,13 +84,15 @@ def main():
             print("transcribed chunks converted to list", file=sys.stderr)
             for fragment in transcription_fragments:
                 response = {"transcription_fragment": fragment, "done": False}
-                nativemessaging.send_message(response)
+                nativemessaging.send_message(json.dumps(response))
 
-            nativemessaging.send_message({"transcription_fragment": "", "done": True})
+            nativemessaging.send_message(
+                json.dumps({"transcription_fragment": "", "done": True})
+            )
             break
         else:
             nativemessaging.send_message(
-                {"error": "No audio_path provided", "done": True}
+                json.dumps({"error": "No audio_path provided", "done": True})
             )
 
 
