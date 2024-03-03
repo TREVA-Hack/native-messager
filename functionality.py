@@ -80,6 +80,57 @@ sys.stderr.write("All imported\n")
 #         send_message(response)
 
 
+def secsToHoursMinsSecsMillis(i):
+    hours = i // 3600
+    mins = (i - hours*3600) // 60
+    secs = (i - hours*3600 - mins*60) // 1
+    millis = ((i - hours*3600 - mins*60 - secs) * 1000) // 1
+    return (hours, max(0,mins), max(0,secs), max(0,millis))
+
+
+def toTimestamp(h, m, s, ml):
+    result = ""
+
+    def pad0(x):
+        nonlocal result
+        if x > 9:
+            result += str(x)
+        else:
+            result += "0" + str(x)
+
+    pad0(int(h))
+    result += ":"
+    pad0(int(m))
+    result += ":"
+    pad0(int(s))
+    result += ","
+
+    ml1 = int(ml)
+    if ml1 > 99:
+        result += str(ml1)
+    elif ml1 > 9:
+        result += "0" + str(ml1)
+    else:
+        result += "00" + str(ml1)
+
+    return result
+
+
+def toSRT(segments) -> str:
+    result = ""
+
+    for i, seg in enumerate(segments):
+        result += str(i) + "\n"
+        (h1, m1, s1, ml1) = secsToHoursMinsSecsMillis(seg['start'])
+        t1 = toTimestamp(h1, m1, s1, ml1)
+        (h2, m2, s2, ml2) = secsToHoursMinsSecsMillis(seg['end'])
+        t2 = toTimestamp(h2, m2, s2, ml2)
+        result += t1 + " --> " + t2 + "\n"
+        result += seg['text'] + "\n"
+
+    return result
+
+
 def main():
     nativemessaging.send_message("MAIN STARTED")
 
@@ -97,8 +148,8 @@ def main():
             audio_path = json.loads(message)["audio_path"]  # Extract the audio path
 
             result = model.transcribe(audio_path)
-            transcription = result["text"]
-            response = {"transcription": transcription, "done": True}
+            transcription = result["segments"]
+            response = {"transcription": toSRT(transcription), "done": True}
 
             nativemessaging.send_message(json.dumps(response))
             break
