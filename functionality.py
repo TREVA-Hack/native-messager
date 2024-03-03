@@ -1,16 +1,27 @@
-import whisper
+#!/usr/bin/python3
 
-import json
-
-# import struct
-# from concurrent.futures import ThreadPoolExecutor
 import nativemessaging
-import pydub
+
+nativemessaging.send_message("Script started")
+
+import traceback
+
 import sys
 
+print("Script started\n", file=sys.stderr)
 
-model = whisper.load_model("tiny")
+sys.stderr.write("Script started\n")
 
+import whisper
+
+sys.stderr.write("Whisper imported\n")
+
+import json
+# import struct
+# from concurrent.futures import ThreadPoolExecutor
+import pydub
+
+sys.stderr.write("All imported\n")
 
 # def send_message(message):
 #     """Send a JSON message to the browser extension."""
@@ -70,18 +81,24 @@ model = whisper.load_model("tiny")
 
 
 def main():
+    nativemessaging.send_message("MAIN STARTED")
+
+    sys.stderr.write("Main started\n")
+
+    model = whisper.load_model("tiny")
+
+    sys.stderr.write("Whisper model initialised\n")
+
     while True:
-        message = nativemessaging.get_message()  # Receive message from the extension
-
+        message = nativemessaging.get_message_raw()  # Receive message from the extension
+        nativemessaging.send_message(message)
+        nativemessaging.send_message("Debug statement 0")
         if "audio_path" in message:
-            audio_path = message["audio_path"]  # Extract the audio path
+            audio_path = json.loads(message)["audio_path"]  # Extract the audio path
 
-            try:
-                result = model.transcribe(audio_path)
-                transcription = result["text"]
-                response = {"transcription_fragment": transcription, "done": True}
-            except Exception as e:  # Add error handling
-                response = {"error": f"Transcription failed: {str(e)}", "done": True}
+            result = model.transcribe(audio_path)
+            transcription = result["text"]
+            response = {"transcription": transcription, "done": True}
 
             nativemessaging.send_message(json.dumps(response))
             break
@@ -92,4 +109,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        nativemessaging.send_message(str(e))
+        nativemessaging.send_message(traceback.format_exc())
+        exit(1)
