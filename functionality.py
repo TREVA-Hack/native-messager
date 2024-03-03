@@ -126,7 +126,7 @@ def toSRT(segments) -> str:
         (h2, m2, s2, ml2) = secsToHoursMinsSecsMillis(seg['end'])
         t2 = toTimestamp(h2, m2, s2, ml2)
         result += t1 + " --> " + t2 + "\n"
-        result += seg['text'] + "\n"
+        result += seg['text'] + "\n" + "\n"
 
     return result
 
