@@ -51,11 +51,18 @@ function interactWithNativeApp(path_to_send) {
     function responseReceived(response) {
         console.log("Received: " + response);
 
-        if (response.done === "true") {
-            console.log("Done, disconnecting");
-            port.disconnect();
-            port.onMessage.removeListener(responseReceived)
+        try {
+            let response2 = JSON.parse(response);
+            console.log("Done: " + response2.done);
+            if (response2.done === true) {
+                console.log("Done, disconnecting");
+                port.disconnect();
+                port.onMessage.removeListener(responseReceived);
+            }
+        } catch {
+            console.log("which is not a JSON");
         }
+
     }
 
     port.onMessage.addListener(responseReceived);
