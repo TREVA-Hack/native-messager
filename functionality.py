@@ -5,6 +5,7 @@ import whisper
 # from concurrent.futures import ThreadPoolExecutor
 import nativemessaging
 import pydub
+import sys
 
 
 model = whisper.load_model("tiny")
@@ -75,11 +76,11 @@ def transcribe_in_chunks(audio_path, chunk_size_seconds=30):
 def main():
     while True:
         message = nativemessaging.get_message()  # Receive message from the extension
-        nativemessaging.send_message("Debug statement 0")
+        print("Debug statement 0", file=sys.stderr)
         if "audio_path" in message:
-            nativemessaging.send_message("audio path key found in message")
+            print("audio path key found in message", file=sys.stderr)
             transcription_fragments = list(transcribe_in_chunks(message))
-            nativemessaging.send_message("transcribed chunks converted to list")
+            print("transcribed chunks converted to list", file=sys.stderr)
             for fragment in transcription_fragments:
                 response = {"transcription_fragment": fragment, "done": False}
                 nativemessaging.send_message(response)
